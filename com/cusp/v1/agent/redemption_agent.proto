@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+package com.cusp.v1.agent;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.agent";
+option java_outer_classname = "RedemptionAgentServiceProto";
+
+// RedemptionAgentService — called by core-service to get ML/intelligence responses.
+service RedemptionAgentService {
+    // Process a natural language query about credit card rewards redemption.
+    rpc QueryRedemption (RedemptionRequest) returns (RedemptionResponse);
+
+    // Lightweight health check.
+    rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message ConversationTurn {
+    string role = 1;   // "user" or "assistant"
+    string text = 2;
+}
+
+message RedemptionRequest {
+    string query = 1;
+    repeated string card_names = 2;
+    string channel = 3;                          // web, mobile, telegram, whatsapp
+    string conversation_id = 4;                  // omit to start new conversation
+    string user_id = 5;
+    repeated ConversationTurn history = 6;       // conversation history
+    map<string, string> context = 7;             // additional context
+}
+
+message RedemptionResponse {
+    string response_text = 1;
+    string intent = 2;
+    float confidence = 3;
+    string conversation_id = 4;
+    string follow_up_question = 5;
+    map<string, string> metadata = 6;
+}
+
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+    string status = 1;
+    string version = 2;
+    map<string, string> components = 3;
+}
