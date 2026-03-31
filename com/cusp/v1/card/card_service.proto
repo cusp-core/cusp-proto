@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+package com.cusp.v1.card;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.card";
+option java_outer_classname = "CardServiceProto";
+
+service CardService {
+  rpc ListCards(ListCardsRequest) returns (ListCardsResponse);
+  rpc GetCard(GetCardRequest) returns (GetCardResponse);
+  rpc SearchCards(SearchCardsRequest) returns (SearchCardsResponse);
+}
+
+message ListCardsRequest {}
+
+message ListCardsResponse {
+  repeated CardDetail cards = 1;
+}
+
+message GetCardRequest {
+  string card_id = 1;
+}
+
+message GetCardResponse {
+  CardDetail card = 1;
+}
+
+message SearchCardsRequest {
+  string query = 1;
+  string issuer_bank = 2;
+  int32 limit = 3;
+}
+
+message SearchCardsResponse {
+  repeated CardDetail cards = 1;
+}
+
+message CardDetail {
+  string id = 1;
+  string name = 2;
+  string issuer_bank = 3;
+  string reward_currency = 4;
+  double base_earning_rate = 5;
+  string image_url = 6;
+}

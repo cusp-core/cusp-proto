@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package com.cusp.v1.reward;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.reward";
+option java_outer_classname = "RewardServiceProto";
+
+// ---------------------------------------------------------------------------
+// Service
+// ---------------------------------------------------------------------------
+
+service RewardService {
+  // Calculate applicable rewards for a given transaction context.
+  // Intended for service-to-service calls (e.g., transaction service triggering
+  // reward evaluation after a card transaction is posted).
+  rpc CalculateRewards(CalculateRewardsRequest) returns (CalculateRewardsResponse);
+}
+
+// ---------------------------------------------------------------------------
+// Request
+// ---------------------------------------------------------------------------
+
+message CalculateRewardsRequest {
+  // UUIDs as strings (standard 8-4-4-4-12 format)
+  string user_card_id   = 1;
+  string card_id        = 2;
+  string user_id        = 3;
+
+  // Optional: present when reward is tied to a specific recorded transaction
+  string transaction_id = 4;
+
+  MoneyAmount transaction_amount = 5;
+
+  MerchantInput merchant = 6;
+
+  // Optional: SpendingChannelType enum name (e.g. "ONLINE_SPENDING").
+  // When blank the calculator resolves channels from MCC/merchant data.
+  string spending_channel = 7;
+
+  // Optional: ISO-8601 LocalDateTime (e.g. "2024-01-15T10:30:00").
+  // Defaults to now() inside the service if blank.
+  string transaction_date = 8;
+
+  // Optional: ISO-8601 LocalDate (e.g. "2023-06-01").
+  // Used by activation-date-based reward conditions.
+  string activated_on = 9;
+
+  // Optional: ISO-8601 LocalDate (e.g. "1990-04-15").
+  // Used by age-based reward conditions.
+  string date_of_birth = 10;
+}
+
+message MoneyAmount {
+  double amount   = 1;
+  string currency = 2; // CurrencyCode enum name, e.g. "INR"
+}
+
+message MerchantInput {
+  // UUID string; blank if not available
+  string merchant_id = 1;
+  // Absent (default instance) when no MCC info is provided
+  MccInput merchant_category_code = 2;
+}
+
+message MccInput {
+  // UUID string of the merchant_category_code record; blank if not available
+  string merchant_category_id   = 1;
+  // Numeric MCC string, e.g. "5541"; blank if not available
+  string merchant_category_code = 2;
+  // MerchantCategoryCodeType enum name, e.g. "FUEL_STATIONS"; blank if not available
+  string category_code_type     = 3;
+}
+
+// ---------------------------------------------------------------------------
+// Response
+// ---------------------------------------------------------------------------
+
+message CalculateRewardsResponse {
+  repeated ApplicableReward rewards = 1;
+}
+
+// A single applicable reward rule, polymorphic via reward_kind.
+message ApplicableReward {
+  string id              = 1; // UUID
+  string name            = 2;
+  // RewardType enum name: SPEND_REWARD | MILESTONE_REWARD | PARTNER_PLATFORM_REWARD
+  string reward_type     = 3;
+  // Discriminator: SPEND | MILESTONE | PARTNER_PLATFORM
+  string reward_kind     = 4;
+  int32  priority        = 5;
+  string reward_point_name = 6;
+  // RewardFrequency name (DAILY, MONTHLY, etc.) — populated for MILESTONE rewards only
+  string frequency       = 7;
+  repeated ApplicableRewardValue values                 = 8;
+  // SpendingChannelType names from applicable SpendingChannelConditions
+  repeated string spending_channel_conditions           = 9;
+}
+
+// Polymorphic reward value using oneof.
+message ApplicableRewardValue {
+  oneof kind {
+    PercentageValue percentage = 1;
+    AbsoluteValue   absolute   = 2;
+    CashbackValue   cashback   = 3;
+    VoucherValue    voucher    = 4;
+  }
+}
+
+message PercentageValue {
+  double percentage        = 1;
+  // 0.0 means no cap
+  double max_reward_amount = 2;
+  string currency          = 3;
+}
+
+message AbsoluteValue {
+  double amount   = 1;
+  string currency = 2;
+}
+
+message CashbackValue {
+  double percentage        = 1;
+  // 0.0 means no cap
+  double max_reward_amount = 2;
+  string currency          = 3;
+}
+
+message VoucherValue {
+  string description        = 1;
+  // 0.0 if unknown
+  double estimated_value_inr = 2;
+}

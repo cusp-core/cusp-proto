@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package com.cusp.v1.card;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.card";
+option java_outer_classname = "UserCardServiceProto";
+
+service UserCardService {
+  rpc GetUserCard(GetUserCardRequest) returns (GetUserCardResponse);
+  rpc GetActiveUserCardsByUserId(GetActiveUserCardsByUserIdRequest) returns (GetActiveUserCardsByUserIdResponse);
+  rpc AddUserCard(AddUserCardRequest) returns (AddUserCardResponse);
+}
+
+enum UserCardStatus {
+  USER_CARD_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}
+
+message UserCardProto {
+  string id              = 1;
+  string card_id         = 2;
+  string user_id         = 3;
+  UserCardStatus status  = 4;
+  // ISO-8601 date string (e.g. "2024-01-15"), blank if not set
+  string activated_on    = 5;
+  string card_last4_digits = 6;
+}
+
+// ---------------------------------------------------------------------------
+// GetUserCard
+// ---------------------------------------------------------------------------
+
+message GetUserCardRequest {
+  string user_card_id = 1;
+}
+
+message GetUserCardResponse {
+  // Absent when no user card exists for the given id.
+  UserCardProto user_card = 1;
+}
+
+// ---------------------------------------------------------------------------
+// AddUserCard
+// ---------------------------------------------------------------------------
+
+message AddUserCardRequest {
+  string card_id           = 1;
+  string user_id           = 2;
+  // Optional
+  string card_last4_digits = 3;
+  // Optional: ISO-8601 date string (e.g. "2024-01-15")
+  string activated_on      = 4;
+}
+
+message AddUserCardResponse {
+  UserCardProto user_card = 1;
+}
+
+// ---------------------------------------------------------------------------
+// GetActiveUserCardsByUserId
+// ---------------------------------------------------------------------------
+
+message GetActiveUserCardsByUserIdRequest {
+  string user_id = 1;
+}
+
+message GetActiveUserCardsByUserIdResponse {
+  repeated UserCardProto user_cards = 1;
+}
