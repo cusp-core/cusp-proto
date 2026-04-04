@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package com.cusp.v1.loyalty;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.loyalty";
+option java_outer_classname = "UserLoyaltyProgramServiceProto";
+
+service UserLoyaltyProgramService {
+  rpc GetUserLoyaltyPrograms(GetUserLoyaltyProgramsRequest) returns (GetUserLoyaltyProgramsResponse);
+  rpc AddUserLoyaltyProgram(AddUserLoyaltyProgramRequest) returns (AddUserLoyaltyProgramResponse);
+  rpc UpdateUserLoyaltyProgram(UpdateUserLoyaltyProgramRequest) returns (UpdateUserLoyaltyProgramResponse);
+}
+
+enum UserLoyaltyProgramStatus {
+  USER_LOYALTY_PROGRAM_STATUS_UNSPECIFIED = 0;
+  ACTIVE = 1;
+  INACTIVE = 2;
+}
+
+message UserLoyaltyProgramProto {
+  string id = 1;
+  string user_id = 2;
+  string loyalty_program_id = 3;
+  string member_id = 4;
+  string points_balance = 5;
+  string tier = 6;
+  UserLoyaltyProgramStatus status = 7;
+}
+
+// ---------------------------------------------------------------------------
+// GetUserLoyaltyPrograms
+// ---------------------------------------------------------------------------
+
+message GetUserLoyaltyProgramsRequest {
+  string user_id = 1;
+}
+
+message GetUserLoyaltyProgramsResponse {
+  repeated UserLoyaltyProgramProto user_loyalty_programs = 1;
+}
+
+// ---------------------------------------------------------------------------
+// AddUserLoyaltyProgram
+// ---------------------------------------------------------------------------
+
+message AddUserLoyaltyProgramRequest {
+  string user_id = 1;
+  string loyalty_program_id = 2;
+  string member_id = 3;
+  string points_balance = 4;
+  string tier = 5;
+}
+
+message AddUserLoyaltyProgramResponse {
+  UserLoyaltyProgramProto user_loyalty_program = 1;
+}
+
+// ---------------------------------------------------------------------------
+// UpdateUserLoyaltyProgram
+// ---------------------------------------------------------------------------
+
+message UpdateUserLoyaltyProgramRequest {
+  string id = 1;
+  string user_id = 2;
+  string member_id = 3;
+  string points_balance = 4;
+  string tier = 5;
+}
+
+message UpdateUserLoyaltyProgramResponse {
+  UserLoyaltyProgramProto user_loyalty_program = 1;
+}

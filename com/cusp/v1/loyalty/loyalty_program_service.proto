@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package com.cusp.v1.loyalty;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.loyalty";
+option java_outer_classname = "LoyaltyProgramServiceProto";
+
+service LoyaltyProgramService {
+  rpc ListLoyaltyPrograms(ListLoyaltyProgramsRequest) returns (ListLoyaltyProgramsResponse);
+  rpc GetLoyaltyProgram(GetLoyaltyProgramRequest) returns (GetLoyaltyProgramResponse);
+}
+
+enum LoyaltyProgramType {
+  LOYALTY_PROGRAM_TYPE_UNSPECIFIED = 0;
+  AIRLINE = 1;
+  HOTEL = 2;
+}
+
+message LoyaltyProgramProto {
+  string id = 1;
+  string name = 2;
+  LoyaltyProgramType program_type = 3;
+  string provider = 4;
+  string currency_name = 5;
+  string alliance_or_group = 6;
+  string logo_url = 7;
+}
+
+message ListLoyaltyProgramsRequest {
+  // Optional filter by program type
+  LoyaltyProgramType program_type = 1;
+}
+
+message ListLoyaltyProgramsResponse {
+  repeated LoyaltyProgramProto programs = 1;
+}
+
+message GetLoyaltyProgramRequest {
+  string program_id = 1;
+}
+
+message GetLoyaltyProgramResponse {
+  LoyaltyProgramProto program = 1;
+}
