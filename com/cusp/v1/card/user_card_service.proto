@@ -9,6 +9,7 @@ option java_outer_classname = "UserCardServiceProto";
 service UserCardService {
   rpc GetUserCard(GetUserCardRequest) returns (GetUserCardResponse);
   rpc GetActiveUserCardsByUserId(GetActiveUserCardsByUserIdRequest) returns (GetActiveUserCardsByUserIdResponse);
+  rpc GetActiveUserCardsByExternalUserId(GetActiveUserCardsByExternalUserIdRequest) returns (GetActiveUserCardsByExternalUserIdResponse);
   rpc AddUserCard(AddUserCardRequest) returns (AddUserCardResponse);
 }
 
@@ -67,5 +68,17 @@ message GetActiveUserCardsByUserIdRequest {
 }
 
 message GetActiveUserCardsByUserIdResponse {
+  repeated UserCardProto user_cards = 1;
+}
+
+// ---------------------------------------------------------------------------
+// GetActiveUserCardsByExternalUserId
+// ---------------------------------------------------------------------------
+
+message GetActiveUserCardsByExternalUserIdRequest {
+  string external_user_id = 1;
+}
+
+message GetActiveUserCardsByExternalUserIdResponse {
   repeated UserCardProto user_cards = 1;
 }
