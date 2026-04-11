@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package com.cusp.v1.user;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.user";
+option java_outer_classname = "UserServiceProto";
+
+service UserService {
+  rpc GetUserByExternalId(GetUserByExternalIdRequest) returns (GetUserByExternalIdResponse);
+}
+
+// ---------------------------------------------------------------------------
+// GetUserByExternalId
+// ---------------------------------------------------------------------------
+
+message GetUserByExternalIdRequest {
+  string external_user_id = 1;
+}
+
+message GetUserByExternalIdResponse {
+  string user_id = 1;
+}
