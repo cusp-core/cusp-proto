@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package com.cusp.v1.merchant;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.merchant";
+option java_outer_classname = "MerchantServiceProto";
+
+// ---------------------------------------------------------------------------
+// Service
+// ---------------------------------------------------------------------------
+
+service MerchantService {
+  // Free-text name search. Primary entry point for an LLM agent that has
+  // parsed a merchant name out of an SMS or natural-language input and needs
+  // to resolve it to a concrete merchant_id usable by RewardService.
+  // Empty result list is a valid outcome — caller should then fall back to
+  // LookupMcc to resolve a category-level MccInput.
+  rpc SearchMerchants(SearchMerchantsRequest) returns (SearchMerchantsResponse);
+
+  // Direct lookup by UUID.
+  rpc GetMerchant(GetMerchantRequest) returns (GetMerchantResponse);
+
+  // Paginated list narrowed to one or more MerchantCategoryCodeType enums.
+  rpc ListMerchantsByCategory(ListMerchantsByCategoryRequest) returns (ListMerchantsByCategoryResponse);
+
+  // Resolve an MCC by id, numeric code, or category code type enum name.
+  rpc LookupMcc(LookupMccRequest) returns (LookupMccResponse);
+
+  // List MCCs, optionally filtered to specific category code types.
+  rpc ListMccs(ListMccsRequest) returns (ListMccsResponse);
+}
+
+// ---------------------------------------------------------------------------
+// SearchMerchants
+// ---------------------------------------------------------------------------
+
+message SearchMerchantsRequest {
+  // Required. Free-text merchant name, e.g. "swiggy".
+  string query = 1;
+
+  // Optional. Hard limit on results. Server default 10, capped at 50.
+  int32 limit = 2;
+
+  // Optional. Narrow to specific MerchantCategoryCodeType enum names.
+  repeated string category_code_types = 3;
+}
+
+message SearchMerchantsResponse {
+  // Ordered best-to-worst (exact > prefix > substring). Empty when no match.
+  repeated MerchantDetail merchants = 1;
+}
+
+// ---------------------------------------------------------------------------
+// GetMerchant
+// ---------------------------------------------------------------------------
+
+message GetMerchantRequest {
+  string merchant_id = 1; // UUID
+}
+
+message GetMerchantResponse {
+  MerchantDetail merchant = 1;
+}
+
+// ---------------------------------------------------------------------------
+// ListMerchantsByCategory
+// ---------------------------------------------------------------------------
+
+message ListMerchantsByCategoryRequest {
+  // Required, non-empty. MerchantCategoryCodeType enum names.
+  repeated string category_code_types = 1;
+
+  // Pagination. Server defaults: page=0, size=20, max size=100.
+  int32 page = 2;
+  int32 size = 3;
+}
+
+message ListMerchantsByCategoryResponse {
+  repeated MerchantDetail merchants = 1;
+  int64 total_elements = 2;
+  int32 page           = 3;
+  int32 size           = 4;
+}
+
+// ---------------------------------------------------------------------------
+// LookupMcc / ListMccs
+// ---------------------------------------------------------------------------
+
+message LookupMccRequest {
+  // Exactly one of the three must be set.
+  oneof key {
+    string merchant_category_id = 1; // UUID
+    int32  code                 = 2; // e.g. 5541
+    string category_code_type   = 3; // MerchantCategoryCodeType enum name
+  }
+}
+
+message LookupMccResponse {
+  // Empty list when nothing matches (never NOT_FOUND).
+  repeated MccDetail mccs = 1;
+}
+
+message ListMccsRequest {
+  // Optional. When empty, returns all MCCs.
+  repeated string category_code_types = 1;
+}
+
+message ListMccsResponse {
+  repeated MccDetail mccs = 1;
+}
+
+// ---------------------------------------------------------------------------
+// Shared types
+// ---------------------------------------------------------------------------
+
+message MerchantDetail {
+  string    id                     = 1; // UUID
+  string    legal_name             = 2; // blank when null in DB
+  string    display_name           = 3; // blank when null in DB
+  MccDetail merchant_category_code = 4; // default instance when null
+}
+
+message MccDetail {
+  string id                 = 1; // UUID
+  // Numeric MCC. 0 when the row represents a range rather than a single code.
+  int32  code               = 2;
+  // Range bounds, both 0 when not a range.
+  int32  range_min          = 3;
+  int32  range_max          = 4;
+  // MerchantCategoryCodeType enum name. Blank when null.
+  string category_code_type = 5;
+}
