@@ -4,12 +4,12 @@ package com.cusp.v1.agent;
 
 option java_multiple_files = true;
 option java_package = "com.cusp.generated.grpc.v1.agent";
-option java_outer_classname = "RedemptionAgentServiceProto";
+option java_outer_classname = "RewardAgentServiceProto";
 
-// RedemptionAgentService — called by core-service to get ML/intelligence responses.
-service RedemptionAgentService {
-    // Process a natural language query about credit card rewards redemption.
-    rpc QueryRedemption (RedemptionRequest) returns (RedemptionResponse);
+// RewardAgentService — called by core-service to get reward intelligence responses.
+service RewardAgentService {
+    // Process a natural language query about credit card rewards, loyalty, offers, earning, or points usage.
+    rpc QueryReward (RewardRequest) returns (RewardResponse);
 
     // Lightweight health check.
     rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse);
@@ -20,7 +20,7 @@ message ConversationTurn {
     string text = 2;
 }
 
-message RedemptionRequest {
+message RewardRequest {
     string query = 1;
     repeated string card_names = 2;
     string channel = 3;                          // web, mobile, telegram, whatsapp
@@ -30,7 +30,7 @@ message RedemptionRequest {
     map<string, string> context = 7;             // additional context
 }
 
-message RedemptionResponse {
+message RewardResponse {
     string response_text = 1;
     string intent = 2;
     float confidence = 3;
