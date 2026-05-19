@@ -1,0 +1,211 @@
+syntax = "proto3";
+
+package com.cusp.v1.offer;
+
+option java_multiple_files = true;
+option java_package = "com.cusp.generated.grpc.v1.offer";
+option java_outer_classname = "OfferServiceProto";
+
+// ============================================================================
+// Enums
+// ============================================================================
+
+/**
+ * Filter for offer association status.
+ * UNSPECIFIED means no status filter is applied.
+ */
+enum OfferStatusFilter {
+  OFFER_STATUS_FILTER_UNSPECIFIED = 0;
+  OFFER_STATUS_FILTER_ACTIVE = 1;
+  OFFER_STATUS_FILTER_PENDING = 2;
+  OFFER_STATUS_FILTER_CLAIMED = 3;
+  OFFER_STATUS_FILTER_EXPIRED = 4;
+  OFFER_STATUS_FILTER_DISMISSED = 5;
+}
+
+/**
+ * Indicates the scope/origin of the offer.
+ */
+enum OfferScope {
+  OFFER_SCOPE_UNSPECIFIED = 0;
+  OFFER_SCOPE_USER_CARD = 1;
+  OFFER_SCOPE_CARD = 2;
+}
+
+/**
+ * High-level offer type.
+ */
+enum OfferType {
+  OFFER_TYPE_UNSPECIFIED = 0;
+  OFFER_TYPE_FLAT_DISCOUNT = 1;
+  OFFER_TYPE_REWARD_MULTIPLIER = 2;
+}
+
+/**
+ * Status of the offer association (link between card/card product and offer).
+ * This is separate from the core offer status.
+ */
+enum OfferAssociationStatus {
+  OFFER_ASSOCIATION_STATUS_UNSPECIFIED = 0;
+  OFFER_ASSOCIATION_STATUS_PENDING = 1;
+  OFFER_ASSOCIATION_STATUS_ACTIVE = 2;
+  OFFER_ASSOCIATION_STATUS_CLAIMED = 3;
+  OFFER_ASSOCIATION_STATUS_EXPIRED = 4;
+  OFFER_ASSOCIATION_STATUS_DISMISSED = 5;
+}
+
+/**
+ * Core status of the offer itself.
+ */
+enum OfferCoreStatus {
+  OFFER_CORE_STATUS_UNSPECIFIED = 0;
+  OFFER_CORE_STATUS_PENDING = 1;
+  OFFER_CORE_STATUS_ACTIVE = 2;
+  OFFER_CORE_STATUS_EXPIRED = 3;
+  OFFER_CORE_STATUS_DISMISSED = 4;
+}
+
+/**
+ * Source type indicating how the offer was discovered/linked.
+ */
+enum OfferSourceType {
+  OFFER_SOURCE_TYPE_UNSPECIFIED = 0;
+  OFFER_SOURCE_TYPE_EMAIL_PARSED = 1;
+  OFFER_SOURCE_TYPE_SMS_PARSED = 2;
+  OFFER_SOURCE_TYPE_SMS_LLM_PARSED = 3;
+  OFFER_SOURCE_TYPE_MANUAL = 4;
+}
+
+/**
+ * Types of offer conditions.
+ */
+enum OfferConditionType {
+  OFFER_CONDITION_TYPE_UNSPECIFIED = 0;
+  OFFER_CONDITION_TYPE_SPEND_BASED = 1;
+  OFFER_CONDITION_TYPE_MERCHANT_BASED = 2;
+}
+
+// ============================================================================
+// Service
+// ============================================================================
+
+service OfferService {
+  rpc GetUserCardOffers(GetUserCardOffersRequest) returns (GetUserCardOffersResponse);
+}
+
+// ============================================================================
+// Messages
+// ============================================================================
+
+/**
+ * Request to get offers for a specific user card.
+ */
+message GetUserCardOffersRequest {
+  string user_card_id = 1;
+  OfferStatusFilter status = 2;
+  int32 page = 3;
+  int32 size = 4;
+  bool exclude_card_level_offers = 5;
+}
+
+/**
+ * Response containing combined user-card and card-level offers.
+ */
+message GetUserCardOffersResponse {
+  repeated UserCardOfferResult offers = 1;
+  PageInfo page_info = 2;
+}
+
+/**
+ * A single offer result with its association details.
+ */
+message UserCardOfferResult {
+  string association_id = 1;
+  string user_card_id = 2;
+  string card_id = 3;
+  OfferScope scope = 4;
+  OfferProto offer = 5;
+  OfferAssociationStatus status = 6;
+  string linked_at = 7;
+  string claimed_at = 8;
+  string expires_at = 9;
+  OfferSourceType source = 10;
+}
+
+/**
+ * Core offer details.
+ */
+message OfferProto {
+  string id = 1;
+  string name = 2;
+  OfferType type = 3;
+  string description = 4;
+  OfferValue value = 5;
+  TimePeriod duration = 6;
+  repeated string merchant_ids = 7;
+  repeated OfferCondition conditions = 8;
+  OfferCoreStatus status = 9;
+  OfferSourceType source = 10;
+}
+
+/**
+ * Union type for offer value (absolute, percentage, or reward multiplier).
+ */
+message OfferValue {
+  oneof value {
+    AbsoluteOfferValue absolute = 1;
+    PercentageOfferValue percentage = 2;
+    RewardMultiplierValue reward_multiplier = 3;
+  }
+}
+
+/**
+ * Absolute value with currency (e.g., 500 INR off).
+ */
+message AbsoluteOfferValue {
+  double amount = 1;
+  string currency = 2;
+}
+
+/**
+ * Percentage value (e.g., 10% cashback).
+ */
+message PercentageOfferValue {
+  double percentage = 1;
+}
+
+/**
+ * Reward multiplier value (e.g., 5x reward points).
+ */
+message RewardMultiplierValue {
+  double multiplier = 1;
+}
+
+/**
+ * Time period for offer validity or condition duration.
+ */
+message TimePeriod {
+  string start = 1;
+  string end = 2;
+}
+
+/**
+ * Additional eligibility condition for an offer.
+ */
+message OfferCondition {
+  OfferConditionType type = 1;
+  map<string, string> details = 2;
+  TimePeriod duration = 3;
+}
+
+/**
+ * Pagination metadata for the combined result set.
+ */
+message PageInfo {
+  int32 page = 1;
+  int32 size = 2;
+  int64 total_elements = 3;
+  int32 total_pages = 4;
+  bool has_next = 5;
+  bool has_previous = 6;
+}

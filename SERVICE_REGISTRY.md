@@ -7,6 +7,7 @@ Maps each proto service to the microservice that implements it.
 | `CardService` | `core-service` | 9090 | `com/cusp/v1/card/card_service.proto` |
 | `UserCardService` | `core-service` | 9090 | `com/cusp/v1/card/user_card_service.proto` |
 | `RewardService` | `core-service` | 9090 | `com/cusp/v1/reward/reward_service.proto` |
+| `OfferService` | `core-service` | 9090 | `com/cusp/v1/offer/offer_service.proto` |
 
 ## Client Configuration
 
