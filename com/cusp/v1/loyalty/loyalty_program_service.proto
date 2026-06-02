@@ -17,6 +17,55 @@ enum LoyaltyProgramType {
   HOTEL = 2;
 }
 
+// Airline alliance enum
+enum AirlineAlliance {
+  AIRLINE_ALLIANCE_UNSPECIFIED = 0;
+  NONE = 1;
+  STAR_ALLIANCE = 2;
+  ONEWORLD = 3;
+  SKYTEAM = 4;
+}
+
+// Airline codes enum
+enum AirlineCode {
+  AIRLINE_CODE_UNSPECIFIED = 0;
+  AIR_INDIA = 1;
+  SINGAPORE_AIRLINES = 2;
+  THAI_AIRWAYS = 3;
+  EMIRATES = 4;
+  QATAR_AIRWAYS = 5;
+  VISTARA = 6;
+  INDIGO = 7;
+  BRITISH_AIRWAYS = 8;
+  LUFTHANSA = 9;
+  AIR_FRANCE_KLM = 10;
+  ETIHAD_AIRWAYS = 11;
+  CATHAY_PACIFIC = 12;
+}
+
+// Loyalty program codes (airlines and hotels)
+enum LoyaltyProgramCode {
+  LOYALTY_PROGRAM_CODE_UNSPECIFIED = 0;
+  AIR_INDIA_MAHARAJA_CLUB = 1;
+  SINGAPORE_AIRLINES_KRISFLYER = 2;
+  THAI_AIRWAYS_ROYAL_ORCHID_PLUS = 3;
+  EMIRATES_SKYWARDS = 4;
+  QATAR_AIRWAYS_PRIVILEGE_CLUB = 5;
+  VISTARA_CLUB_VISTARA = 6;
+  INDIGO_BLUCHIP = 7;
+  BRITISH_AIRWAYS_EXECUTIVE_CLUB = 8;
+  LUFTHANSA_MILES_AND_MORE = 9;
+  AIR_FRANCE_KLM_FLYING_BLUE = 10;
+  ETIHAD_AIRWAYS_ETIHAD_GUEST = 11;
+  CATHAY_PACIFIC_ASIA_MILES = 12;
+  MARRIOTT_BONVOY = 13;
+  HILTON_HONORS = 14;
+  IHG_ONE_REWARDS = 15;
+  TAJ_INNERCIRCLE = 16;
+  ACCOR_LIVE_LIMITLESS = 17;
+  HYATT_WORLD_OF_HYATT = 18;
+}
+
 message LoyaltyProgramProto {
   string id = 1;
   string name = 2;
@@ -25,6 +74,18 @@ message LoyaltyProgramProto {
   string currency_name = 5;
   string alliance_or_group = 6;
   string logo_url = 7;
+  // Airline-specific metadata (only populated when program_type is AIRLINE)
+  AirlineCode airline_code = 8;
+  LoyaltyProgramCode program_code = 9;
+}
+
+// Airline-specific loyalty program metadata
+message AirlineLoyaltyProgramProto {
+  string id = 1;
+  string loyalty_program_id = 2;
+  LoyaltyProgramCode program_code = 3;
+  AirlineCode airline_code = 4;
+  AirlineAlliance alliance = 5;
 }
 
 message ListLoyaltyProgramsRequest {
