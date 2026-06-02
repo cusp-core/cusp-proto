@@ -11,6 +11,12 @@ service LoyaltyProgramService {
   rpc GetLoyaltyProgram(GetLoyaltyProgramRequest) returns (GetLoyaltyProgramResponse);
 }
 
+// Service for airline-specific loyalty program operations
+service AirlineLoyaltyProgramService {
+  rpc ListAirlineLoyaltyPrograms(ListAirlineLoyaltyProgramsRequest) returns (ListAirlineLoyaltyProgramsResponse);
+  rpc GetAirlineLoyaltyProgram(GetAirlineLoyaltyProgramRequest) returns (GetAirlineLoyaltyProgramResponse);
+}
+
 enum LoyaltyProgramType {
   LOYALTY_PROGRAM_TYPE_UNSPECIFIED = 0;
   AIRLINE = 1;
@@ -103,4 +109,27 @@ message GetLoyaltyProgramRequest {
 
 message GetLoyaltyProgramResponse {
   LoyaltyProgramProto program = 1;
+}
+
+// AirlineLoyaltyProgram request/response messages
+message ListAirlineLoyaltyProgramsRequest {
+  // Optional filter by airline code
+  AirlineCode airline_code = 1;
+}
+
+message ListAirlineLoyaltyProgramsResponse {
+  repeated AirlineLoyaltyProgramProto airline_programs = 1;
+}
+
+message GetAirlineLoyaltyProgramRequest {
+  oneof lookup {
+    // Lookup by program code
+    LoyaltyProgramCode program_code = 1;
+    // Lookup by airline code (returns first match)
+    AirlineCode airline_code = 2;
+  }
+}
+
+message GetAirlineLoyaltyProgramResponse {
+  AirlineLoyaltyProgramProto airline_program = 1;
 }
