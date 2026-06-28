@@ -9,6 +9,7 @@ option java_outer_classname = "LoyaltyProgramServiceProto";
 service LoyaltyProgramService {
   rpc ListLoyaltyPrograms(ListLoyaltyProgramsRequest) returns (ListLoyaltyProgramsResponse);
   rpc GetLoyaltyProgram(GetLoyaltyProgramRequest) returns (GetLoyaltyProgramResponse);
+  rpc FindCardLoyaltyTransferRatios(FindCardLoyaltyTransferRatiosRequest) returns (FindCardLoyaltyTransferRatiosResponse);
 }
 
 // Service for airline-specific loyalty program operations
@@ -109,6 +110,25 @@ message GetLoyaltyProgramRequest {
 
 message GetLoyaltyProgramResponse {
   LoyaltyProgramProto program = 1;
+}
+
+message CardLoyaltyTransferRatioProto {
+  string id = 1;
+  string card_id = 2;
+  string loyalty_program_id = 3;
+  double source_points = 4;
+  double target_points = 5;
+  bool is_active = 6;
+  string notes = 7;
+}
+
+message FindCardLoyaltyTransferRatiosRequest {
+  string card_id = 1;
+  string loyalty_program_id = 2;
+}
+
+message FindCardLoyaltyTransferRatiosResponse {
+  repeated CardLoyaltyTransferRatioProto ratios = 1;
 }
 
 // AirlineLoyaltyProgram request/response messages
