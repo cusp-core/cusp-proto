@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package com.cusp.v1.loyalty;
 
+import "google/protobuf/wrappers.proto";
+
 option java_multiple_files = true;
 option java_package = "com.cusp.generated.grpc.v1.loyalty";
 option java_outer_classname = "LoyaltyProgramServiceProto";
@@ -213,13 +215,13 @@ message PredictAwardCostRequest {
 message PredictAwardCostResponse {
   string origin_airport = 1;
   string destination_airport = 2;
-  string loyalty_program_id = 3;
+  google.protobuf.StringValue loyalty_program_id = 3;
   AwardCabinClassProto cabin_class = 4;
-  double points_estimate = 5;
-  double points_low = 6;
-  double points_high = 7;
-  double surcharge_estimate = 8;
-  string surcharge_currency = 9;
+  google.protobuf.DoubleValue points_estimate = 5;
+  google.protobuf.DoubleValue points_low = 6;
+  google.protobuf.DoubleValue points_high = 7;
+  google.protobuf.DoubleValue surcharge_estimate = 8;
+  google.protobuf.StringValue surcharge_currency = 9;
   AwardCostConfidenceProto confidence = 10;
   AwardCostSourceTypeProto source_type = 11;
   string note = 12;
