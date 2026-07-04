@@ -18,6 +18,11 @@ service AirlineLoyaltyProgramService {
   rpc GetAirlineLoyaltyProgram(GetAirlineLoyaltyProgramRequest) returns (GetAirlineLoyaltyProgramResponse);
 }
 
+// Service for flight award-cost prediction backed by core-service award charts.
+service AwardChartService {
+  rpc PredictAwardCost(PredictAwardCostRequest) returns (PredictAwardCostResponse);
+}
+
 enum LoyaltyProgramType {
   LOYALTY_PROGRAM_TYPE_UNSPECIFIED = 0;
   AIRLINE = 1;
@@ -152,4 +157,70 @@ message GetAirlineLoyaltyProgramRequest {
 
 message GetAirlineLoyaltyProgramResponse {
   AirlineLoyaltyProgramProto airline_program = 1;
+}
+
+enum AwardCabinClassProto {
+  AWARD_CABIN_CLASS_UNSPECIFIED = 0;
+  AWARD_CABIN_CLASS_ECONOMY = 1;
+  AWARD_CABIN_CLASS_PREMIUM_ECONOMY = 2;
+  AWARD_CABIN_CLASS_BUSINESS = 3;
+  AWARD_CABIN_CLASS_FIRST = 4;
+}
+
+enum AwardTypeProto {
+  AWARD_TYPE_UNSPECIFIED = 0;
+  AWARD_TYPE_SAVER = 1;
+  AWARD_TYPE_STANDARD = 2;
+  AWARD_TYPE_PEAK = 3;
+  AWARD_TYPE_OFF_PEAK = 4;
+  AWARD_TYPE_DYNAMIC = 5;
+}
+
+enum AwardTripTypeProto {
+  AWARD_TRIP_TYPE_UNSPECIFIED = 0;
+  AWARD_TRIP_TYPE_ONE_WAY = 1;
+  AWARD_TRIP_TYPE_RETURN = 2;
+}
+
+enum AwardCostConfidenceProto {
+  AWARD_COST_CONFIDENCE_UNSPECIFIED = 0;
+  AWARD_COST_CONFIDENCE_HIGH = 1;
+  AWARD_COST_CONFIDENCE_MEDIUM = 2;
+  AWARD_COST_CONFIDENCE_LOW = 3;
+  AWARD_COST_CONFIDENCE_NONE = 4;
+}
+
+enum AwardCostSourceTypeProto {
+  AWARD_COST_SOURCE_TYPE_UNSPECIFIED = 0;
+  AWARD_COST_SOURCE_TYPE_OFFICIAL_AWARD_CHART = 1;
+  AWARD_COST_SOURCE_TYPE_COMMUNITY_REPORTS = 2;
+  AWARD_COST_SOURCE_TYPE_NO_DATA = 3;
+}
+
+message PredictAwardCostRequest {
+  string origin_airport = 1;
+  string destination_airport = 2;
+  string loyalty_program_id = 3;
+  LoyaltyProgramCode loyalty_program_code = 4;
+  string program_name = 5;
+  AwardCabinClassProto cabin_class = 6;
+  AwardTypeProto award_type = 7;
+  AwardTripTypeProto trip_type = 8;
+  AirlineCode operating_airline = 9;
+  int32 route_distance_miles = 10;
+}
+
+message PredictAwardCostResponse {
+  string origin_airport = 1;
+  string destination_airport = 2;
+  string loyalty_program_id = 3;
+  AwardCabinClassProto cabin_class = 4;
+  double points_estimate = 5;
+  double points_low = 6;
+  double points_high = 7;
+  double surcharge_estimate = 8;
+  string surcharge_currency = 9;
+  AwardCostConfidenceProto confidence = 10;
+  AwardCostSourceTypeProto source_type = 11;
+  string note = 12;
 }
